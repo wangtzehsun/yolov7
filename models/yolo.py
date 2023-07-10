@@ -519,6 +519,8 @@ class Model(nn.Module):
 
         # Define model
         ch = self.yaml['ch'] = self.yaml.get('ch', ch)  # input channels
+        # print('!!!!!!!!!!!!!!!!!!')
+        # print(ch)
         if nc and nc != self.yaml['nc']:
             logger.info(f"Overriding model.yaml nc={self.yaml['nc']} with nc={nc}")
             self.yaml['nc'] = nc  # override yaml value
@@ -734,6 +736,8 @@ class Model(nn.Module):
 
 
 def parse_model(d, ch):  # model_dict, input_channels(3)
+    # print("@@@@@@@@@@@@@@@@@@@")
+    # print(ch)
     logger.info('\n%3s%18s%3s%10s  %-40s%-30s' % ('', 'from', 'n', 'params', 'module', 'arguments'))
     anchors, nc, gd, gw = d['anchors'], d['nc'], d['depth_multiple'], d['width_multiple']
     na = (len(anchors[0]) // 2) if isinstance(anchors, list) else anchors  # number of anchors
@@ -741,6 +745,11 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
 
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
     for i, (f, n, m, args) in enumerate(d['backbone'] + d['head']):  # from, number, module, args
+        # print('#########################')
+        # print(f)
+        # print(n)
+        # print(m)
+        # print(args)
         m = eval(m) if isinstance(m, str) else m  # eval strings
         for j, a in enumerate(args):
             try:
@@ -761,7 +770,13 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                  Ghost, GhostCSPA, GhostCSPB, GhostCSPC,
                  SwinTransformerBlock, STCSPA, STCSPB, STCSPC,
                  SwinTransformer2Block, ST2CSPA, ST2CSPB, ST2CSPC,
-                 C3, C3TR, CBAM, SE, Conv_maxpool, ShuffleNetV2_Model, DepthwiseSeparableConv2d,ConvNextBlock]:
+                 C3, C3TR, CBAM, SE, Conv_maxpool, ShuffleNetV2_Model, DepthwiseSeparableConv2d,ConvNextBlock, C3C2]:
+            # print('===============')
+            # print(f"this is m : {m}")
+            # print(f"this is f : {f}")
+            # print(f"this is ch : {ch}")
+            # print(f"this is ch-len : {len(ch)}")
+            # print(f"this is args : {args[0]}")
             c1, c2 = ch[f], args[0]
             if c2 != no:  # if not output
                 c2 = make_divisible(c2 * gw, 8)
