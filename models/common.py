@@ -64,10 +64,10 @@ class Concat(nn.Module):
         self.d = dimension
 
     def forward(self, x):
-        print("====================")
-        print(len(x))
-        for i in x:
-            print(i.shape)
+        # print("====================")
+        # print(len(x))
+        # for i in x:
+        #     print(i.shape)
         return torch.cat(x, self.d)
 
 
@@ -168,9 +168,19 @@ class GhostConv(nn.Module):
         self.cv1 = Conv(c1, c_, k, s, None, g, act)
         self.cv2 = Conv(c_, c_, 5, 1, None, c_, act)
 
+        if act:
+            self.activation = nn.SiLU()  # Swish activation
+        else:
+            self.activation = nn.Identity()  # No activation
+
+        self.batch_norm = nn.BatchNorm2d(c2)
+
     def forward(self, x):
         y = self.cv1(x)
-        return torch.cat([y, self.cv2(y)], 1)
+        y = torch.cat([y, self.cv2(y)], 1)
+        y = self.activation(y)
+        y = self.batch_norm(y)
+        return y
 
 
 class Stem(nn.Module):
