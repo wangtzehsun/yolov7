@@ -1,7 +1,7 @@
 # train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
-train: ../my_dataset/Visdrone/VisDrone2019-DET-train  # 118287 images
-val: ../my_dataset/Visdrone/VisDrone2019-DET-val  # 5000 images
-test: ../my_dataset/Visdrone/VisDrone2019-DET-test-dev # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
+train: ../my_dataset/Visdrone/VisDrone2019-DET-train/images
+val: ../my_dataset/Visdrone/VisDrone2019-DET-val/images
+test: ../my_dataset/Visdrone/VisDrone2019-DET-test-dev/images
 
 # number of classes
 nc: 10
