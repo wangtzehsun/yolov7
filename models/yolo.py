@@ -771,7 +771,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
                  SwinTransformerBlock, STCSPA, STCSPB, STCSPC,
                  SwinTransformer2Block, ST2CSPA, ST2CSPB, ST2CSPC,
                  C3, C3TR, CBAM, SE, Conv_maxpool, ShuffleNetV2_Model, DepthwiseSeparableConv2d,ConvNextBlock, C3C2,
-                 CoordAtt, HorBlock, GAMAttention]:
+                 CoordAtt, HorBlock, GAMAttention, SimAM]:
             # print('===============')
             # print(f"this is m : {m}")
             # print(f"this is f : {f}")
