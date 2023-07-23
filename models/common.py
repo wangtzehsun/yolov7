@@ -64,10 +64,10 @@ class Concat(nn.Module):
         self.d = dimension
 
     def forward(self, x):
-        print("====================")
-        print(len(x))
-        for i in x:
-            print(i.shape)
+        # print("====================")
+        # print(len(x))
+        # for i in x:
+        #     print(i.shape)
         return torch.cat(x, self.d)
 
 
