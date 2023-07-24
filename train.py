@@ -527,7 +527,7 @@ def train(hyp, opt, device, tb_writer=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default='yolov7_training.pt', help='initial weights path')
-    parser.add_argument('--cfg', type=str, default='yolov7-final-8-layer-conv.yaml', help='model.yaml path')
+    parser.add_argument('--cfg', type=str, default='yolov7x-final-mix-10-conv-elan.yaml', help='model.yaml path')
     parser.add_argument('--data', type=str, default='data/visdrone-final.yaml', help='data.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyp.scratch.p5.yaml', help='hyperparameters path')
     parser.add_argument('--epochs', type=int, default=50)
