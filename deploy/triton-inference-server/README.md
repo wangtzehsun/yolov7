@@ -15,7 +15,7 @@ See https://github.com/WongKinYiu/yolov7#export for more info.
 pip3 install onnx-simplifier 
 
 # Pytorch Yolov7 -> ONNX with grid, EfficientNMS plugin and dynamic batch size
-python export.py --weights ./yolov7.pt --grid --end2end --dynamic-batch --simplify --topk-all 100 --iou-thres 0.65 --conf-thres 0.35 --img-size 640 640
+python export.py --weights ./yolov7.pt --grid --end2end --dynamic-batch --simplify --topk-all 100 --iou-thres 0.65 --conf-thres 0.35 --augmentation-size 640 640
 # ONNX -> TensorRT with trtexec and docker
 docker run -it --rm --gpus=all nvcr.io/nvidia/tensorrt:22.06-py3
 # Copy onnx -> container: docker cp yolov7.onnx <container-id>:/workspace/

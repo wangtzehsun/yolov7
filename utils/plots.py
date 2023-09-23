@@ -55,7 +55,7 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
 
 
 def plot_one_box(x, img, color=None, label=None, line_thickness=3):
-    # Plots one bounding box on image img
+    # Plots one bounding box on image augmentation
     tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
@@ -247,7 +247,7 @@ def plot_study_txt(path='', x=None):  # from utils.plots import *; plot_study_tx
     for f in sorted(Path(path).glob('study*.txt')):
         y = np.loadtxt(f, dtype=np.float32, usecols=[0, 1, 2, 3, 7, 8, 9], ndmin=2).T
         x = np.arange(y.shape[1]) if x is None else np.array(x)
-        s = ['P', 'R', 'mAP@.5', 'mAP@.5:.95', 't_inference (ms/img)', 't_NMS (ms/img)', 't_total (ms/img)']
+        s = ['P', 'R', 'mAP@.5', 'mAP@.5:.95', 't_inference (ms/augmentation)', 't_NMS (ms/augmentation)', 't_total (ms/augmentation)']
         # for i in range(7):
         #     ax[i].plot(x, y[i], '.-', linewidth=2, markersize=8)
         #     ax[i].set_title(s[i])
@@ -263,7 +263,7 @@ def plot_study_txt(path='', x=None):  # from utils.plots import *; plot_study_tx
     ax2.set_yticks(np.arange(20, 60, 5))
     ax2.set_xlim(0, 57)
     ax2.set_ylim(30, 55)
-    ax2.set_xlabel('GPU Speed (ms/img)')
+    ax2.set_xlabel('GPU Speed (ms/augmentation)')
     ax2.set_ylabel('COCO AP val')
     ax2.legend(loc='lower right')
     plt.savefig(str(Path(path).name) + '.png', dpi=300)

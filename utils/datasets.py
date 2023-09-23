@@ -578,14 +578,14 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                                                  perspective=hyp['perspective'])
             
             
-            #img, labels = self.albumentations(img, labels)
+            #augmentation, labels = self.albumentations(augmentation, labels)
 
             # Augment colorspace
             augment_hsv(img, hgain=hyp['hsv_h'], sgain=hyp['hsv_s'], vgain=hyp['hsv_v'])
 
             # Apply cutouts
             # if random.random() < 0.9:
-            #     labels = cutout(img, labels)
+            #     labels = cutout(augmentation, labels)
             
             if random.random() < hyp['paste_in']:
                 sample_labels, sample_images, sample_masks = [], [], [] 
@@ -664,7 +664,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 
 # Ancillary functions --------------------------------------------------------------------------------------------------
 def load_image(self, index):
-    # loads 1 image from dataset, returns img, original hw, resized hw
+    # loads 1 image from dataset, returns augmentation, original hw, resized hw
     img = self.imgs[index]
     if img is None:  # not cached
         path = self.img_files[index]
@@ -675,9 +675,9 @@ def load_image(self, index):
         if r != 1:  # always resize down, only resize up if training with augmentation
             interp = cv2.INTER_AREA if r < 1 and not self.augment else cv2.INTER_LINEAR
             img = cv2.resize(img, (int(w0 * r), int(h0 * r)), interpolation=interp)
-        return img, (h0, w0), img.shape[:2]  # img, hw_original, hw_resized
+        return img, (h0, w0), img.shape[:2]  # augmentation, hw_original, hw_resized
     else:
-        return self.imgs[index], self.img_hw0[index], self.img_hw[index]  # img, hw_original, hw_resized
+        return self.imgs[index], self.img_hw0[index], self.img_hw[index]  # augmentation, hw_original, hw_resized
 
 
 def augment_hsv(img, hgain=0.5, sgain=0.5, vgain=0.5):
@@ -695,7 +695,7 @@ def augment_hsv(img, hgain=0.5, sgain=0.5, vgain=0.5):
 
 
 def hist_equalize(img, clahe=True, bgr=False):
-    # Equalize histogram on BGR image 'img' with img.shape(n,m,3) and range 0-255
+    # Equalize histogram on BGR image 'augmentation' with augmentation.shape(n,m,3) and range 0-255
     yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV if bgr else cv2.COLOR_RGB2YUV)
     if clahe:
         c = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
@@ -716,7 +716,7 @@ def load_mosaic(self, index):
         # Load image
         img, _, (h, w) = load_image(self, index)
 
-        # place img in img4
+        # place augmentation in img4
         if i == 0:  # top left
             img4 = np.full((s * 2, s * 2, img.shape[2]), 114, dtype=np.uint8)  # base image with 4 tiles
             x1a, y1a, x2a, y2a = max(xc - w, 0), max(yc - h, 0), xc, yc  # xmin, ymin, xmax, ymax (large image)
@@ -774,7 +774,7 @@ def load_mosaic9(self, index):
         # Load image
         img, _, (h, w) = load_image(self, index)
 
-        # place img in img9
+        # place augmentation in img9
         if i == 0:  # center
             img9 = np.full((s * 3, s * 3, img.shape[2]), 114, dtype=np.uint8)  # base image with 4 tiles
             h0, w0 = h, w
@@ -851,7 +851,7 @@ def load_samples(self, index):
         # Load image
         img, _, (h, w) = load_image(self, index)
 
-        # place img in img4
+        # place augmentation in img4
         if i == 0:  # top left
             img4 = np.full((s * 2, s * 2, img.shape[2]), 114, dtype=np.uint8)  # base image with 4 tiles
             x1a, y1a, x2a, y2a = max(xc - w, 0), max(yc - h, 0), xc, yc  # xmin, ymin, xmax, ymax (large image)
@@ -910,7 +910,7 @@ def copy_paste(img, labels, segments, probability=0.5):
         result = cv2.flip(result, 1)  # augment segments (flip left-right)
         i = result > 0  # pixels to replace
         # i[:, :] = result.max(2).reshape(h, w, 1)  # act over ch
-        img[i] = result[i]  # cv2.imwrite('debug.jpg', img)  # debug
+        img[i] = result[i]  # cv2.imwrite('debug.jpg', augmentation)  # debug
 
     return img, labels, segments
 
@@ -927,7 +927,7 @@ def remove_background(img, labels, segments):
         result = cv2.bitwise_and(src1=img, src2=im_new)
         
         i = result > 0  # pixels to replace
-        img_new[i] = result[i]  # cv2.imwrite('debug.jpg', img)  # debug
+        img_new[i] = result[i]  # cv2.imwrite('debug.jpg', augmentation)  # debug
 
     return img_new, labels, segments
 
@@ -957,7 +957,7 @@ def sample_segments(img, labels, segments, probability=0.5):
             
             result = cv2.bitwise_and(src1=img, src2=mask)
             i = result > 0  # pixels to replace
-            mask[i] = result[i]  # cv2.imwrite('debug.jpg', img)  # debug
+            mask[i] = result[i]  # cv2.imwrite('debug.jpg', augmentation)  # debug
             #print(box)
             sample_images.append(mask[box[1]:box[3],box[0]:box[2],:])
 
@@ -1061,7 +1061,7 @@ def random_perspective(img, targets=(), segments=(), degrees=10, translate=.1, s
     # Visualize
     # import matplotlib.pyplot as plt
     # ax = plt.subplots(1, 2, figsize=(12, 6))[1].ravel()
-    # ax[0].imshow(img[:, :, ::-1])  # base
+    # ax[0].imshow(augmentation[:, :, ::-1])  # base
     # ax[1].imshow(img2[:, :, ::-1])  # warped
 
     # Transform label coordinates
