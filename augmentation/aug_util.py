@@ -33,88 +33,96 @@ def get_enhance_save(old_images_files, old_labels_files, label_list, enhance_ima
 
     for name in label_files_name:
 
-        label_files = os.path.join(old_labels_files, name)
+        if name == "classes.txt":
+            continue
 
-        yolo_b_boxes = open(label_files).read().splitlines()
+        for i in range(0, 20):
 
-        bboxes = []
+            label_files = os.path.join(old_labels_files, name)
 
-        class_labels = []
+            yolo_b_boxes = open(label_files).read().splitlines()
 
-        # 对一个txt文件的每一行标注数据进行处理
-        for b_box in yolo_b_boxes:
-            b_box = b_box.split(" ")
-            m_box = b_box[1:5]
+            bboxes = []
 
-            m_box = list(map(float, m_box))
+            class_labels = []
 
-            m_class = b_box[0]
+            # 对一个txt文件的每一行标注数据进行处理
+            for b_box in yolo_b_boxes:
+                b_box = b_box.split(" ")
+                m_box = b_box[1:5]
 
-            bboxes.append(m_box)
-            class_labels.append(label_list[int(m_class)])
+                m_box = list(map(float, m_box))
 
-        # 读取对应的图像
-        image_path = os.path.join(old_images_files, name.replace(".txt", ".jpg"))
-        if os.path.exists(image_path) is False:
+                m_class = b_box[0]
+
+                bboxes.append(m_box)
+                class_labels.append(label_list[int(m_class)])
+
+            # 读取对应的图像
             image_path = os.path.join(old_images_files, name.replace(".txt", ".jpg"))
+            if os.path.exists(image_path) is False:
+                image_path = os.path.join(old_images_files, name.replace(".txt", ".jpg"))
 
-        image = cv2.imread(image_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = cv2.imread(image_path)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        # 调用上面定义的图像增强方法进行数据增强
-        transformed = transform(image=image, bboxes=bboxes, class_labels=class_labels)
-        transformed_image = transformed['image']
-        transformed_image = cv2.cvtColor(transformed_image, cv2.COLOR_BGR2RGB)
-        transformed_b_boxes = transformed['bboxes']
-        transformed_class_labels = transformed['class_labels']
+            # 调用上面定义的图像增强方法进行数据增强
+            transformed = transform(image=image, bboxes=bboxes, class_labels=class_labels)
+            transformed_image = transformed['image']
+            transformed_image = cv2.cvtColor(transformed_image, cv2.COLOR_BGR2RGB)
+            transformed_b_boxes = transformed['bboxes']
+            transformed_class_labels = transformed['class_labels']
 
-        # 先判断目标文件夹路径是否存在
-        if os.path.exists(enhance_images_files) is False:
-            os.mkdir(enhance_images_files)
-        a, b = os.path.splitext(name)
-        new_name = a + mid_name + b
-        cv2.imwrite(os.path.join(enhance_images_files, new_name.replace(".txt", ".jpg")), transformed_image)
+            # 先判断目标文件夹路径是否存在
+            if os.path.exists(enhance_images_files) is False:
+                os.mkdir(enhance_images_files)
+            a, b = os.path.splitext(name)
 
-        if os.path.exists(enhance_labels_files) is False:
-            os.mkdir(enhance_labels_files)
+            int_name = str(int(a) + i)
 
-        new_txt_file = open(os.path.join(enhance_labels_files, new_name), "w")
+            new_name = int_name + mid_name + b
+            cv2.imwrite(os.path.join(enhance_images_files, new_name.replace(".txt", ".jpg")), transformed_image)
 
-        new_bboxes = []
+            if os.path.exists(enhance_labels_files) is False:
+                os.mkdir(enhance_labels_files)
 
-        for box, label in zip(transformed_b_boxes, transformed_class_labels):
+            new_txt_file = open(os.path.join(enhance_labels_files, new_name), "w")
 
-            new_class_num = label_list.index(label)
-            box = list(box)
-            for i in range(len(box)):
-                box[i] = str(('%.5f' % box[i]))
-            box.insert(0, str(new_class_num))
-            new_bboxes.append(box)
+            new_bboxes = []
 
-        for new_box in new_bboxes:
+            for box, label in zip(transformed_b_boxes, transformed_class_labels):
 
-            for ele in new_box:
-                if ele is not new_box[-1]:
-                    new_txt_file.write(ele + " ")
-                else:
-                    new_txt_file.write(ele)
+                new_class_num = label_list.index(label)
+                box = list(box)
+                for i in range(len(box)):
+                    box[i] = str(('%.5f' % box[i]))
+                box.insert(0, str(new_class_num))
+                new_bboxes.append(box)
 
-            new_txt_file.write('\n')
+            for new_box in new_bboxes:
 
-        new_txt_file.close()
+                for ele in new_box:
+                    if ele is not new_box[-1]:
+                        new_txt_file.write(ele + " ")
+                    else:
+                        new_txt_file.write(ele)
+
+                new_txt_file.write('\n')
+
+            new_txt_file.close()
 
 
 def main():
     root = r"F:\ESCI\yolov7\augmentation\basketdata"
 
-    old_images_files = os.path.join(root, "images")
-    old_labels_files = os.path.join(root, "labels")
+    old_images_files = os.path.join(root, "raw_images")
+    old_labels_files = os.path.join(root, "raw_labels")
 
-    enhance_images_files = os.path.join(root, "enhance_images")
-    enhance_labels_files = os.path.join(root, "enhance_labels")
+    enhance_images_files = os.path.join(root, "images")
+    enhance_labels_files = os.path.join(root, "labels")
 
     # 这里设置数据集的类别
-    label_list = ["fruit", "bread"]
+    label_list = ["Banana", "Pluot", "Tomato", "Orange", "Apple"]
 
     # 实现对传入的数据文件进行遍历读取，并进行数据增强
     get_enhance_save(old_images_files, old_labels_files, label_list, enhance_images_files, enhance_labels_files)

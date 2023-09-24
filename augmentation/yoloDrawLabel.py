@@ -3,8 +3,8 @@ import cv2
 # 設定輸入與輸出
 # inputLabelPath = 'basketdata/labels/001.txt'
 # inputImgPath = 'basketdata/images/001.jpg'
-inputLabelPath = 'basketdata/enhance_labels/001_VerticalFlip.txt'
-inputImgPath = 'basketdata/enhance_images/001_VerticalFlip.jpg'
+inputLabelPath = 'basketdata/labels/5_VerticalFlip.txt'
+inputImgPath = 'basketdata/images/5_VerticalFlip.jpg'
 outputImgPath = 'aaa.jpg'
 # 圖片大小固定為 608＊608
 img_w= img_h = 640
