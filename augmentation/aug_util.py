@@ -26,9 +26,6 @@ def get_enhance_save(old_images_files, old_labels_files, label_list, enhance_ima
         A.RandomBrightnessContrast(p=0.9),
     ], bbox_params=A.BboxParams(format='yolo', min_area=1024, min_visibility=0.2, label_fields=['class_labels']))
 
-    # 这里指定修改后image和label的文件名
-    mid_name = "_VerticalFlip"
-
     label_files_name = os.listdir(old_labels_files)
 
     for name in label_files_name:
@@ -80,7 +77,7 @@ def get_enhance_save(old_images_files, old_labels_files, label_list, enhance_ima
 
             int_name = str(int(a) + i)
 
-            new_name = int_name + mid_name + b
+            new_name = int_name + b
             cv2.imwrite(os.path.join(enhance_images_files, new_name.replace(".txt", ".jpg")), transformed_image)
 
             if os.path.exists(enhance_labels_files) is False:
